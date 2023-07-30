@@ -1,32 +1,74 @@
+# Speech to Text and Text to Speech Python Program
 
-Speech Recognition is an important feature in several applications used such as home automation, artificial intelligence, etc. This article aims to provide an introduction on how to make use of the SpeechRecognition and pyttsx3 library of Python.
+This Python program allows you to convert speech to text and text to speech using the SpeechRecognition and pyttsx3 libraries.
 
-Installation required:
+## Requirements
 
-Python Speech Recognition module:
-pip install speechrecognition
-PyAudio: Use the following command for linux users
-sudo apt-get install python3-pyaudio
-Windows users can install pyaudio by executing the following command in a terminal
+Ensure you have the following libraries installed:
 
-pip install pyaudio
-Python pyttsx3 module:
-pip install pyttsx3
-Speech Input Using a Microphone and Translation of Speech to Text
+- `speech_recognition`: To recognize speech and convert it to text.
+  ```
+  pip install SpeechRecognition
+  ```
+- `pyttsx3`: To convert text to speech.
+  ```
+  pip install pyttsx3
+  ```
 
-Allow Adjusting for Ambient Noise: Since the surrounding noise varies, we must allow the program a second or too to adjust the energy threshold of recording so it is adjusted according to the external noise level.
-Speech to text translation: This is done with the help of Google Speech Recognition. This requires an active internet connection to work. However, there are certain offline Recognition systems such as PocketSphinx, but have a very rigorous installation process that requires several dependencies. Google Speech Recognition is one of the easiest to use.
-Translation of Speech to Text:
+## Usage
 
-First, we need to import the library and then initialize it using init() function. This function may take 2 arguments.
+1. Import the required libraries:
+```python
+import speech_recognition as sr
+import pyttsx3
+```
 
-init(driverName string, debug bool)
-drivername: [Name of available driver] sapi5 on Windows | nsss on MacOS
-debug: to enable or disable debug output
-After initialization, we will make the program speak the text using say() function.
-This method may also take 2 arguments.
+2. Initialize the recognizer and the text-to-speech engine:
+```python
+r = sr.Recognizer()
 
-say(text unicode, name string)
-text: Any text you wish to hear.
-name: To set a name for this speech. (optional)
-Finally, to run the speech we use runAndWait() All the say() texts won’t be said unless the interpreter encounters runAndWait().
+def SpeakText(command):
+    engine = pyttsx3.init()
+    engine.say(command)
+    engine.runAndWait()
+```
+
+3. Enter a loop to continuously listen for user input:
+```python
+while True:
+    try:
+        # Use the microphone as the source for input.
+        with sr.Microphone() as source:
+            # Wait for a second to let the recognizer adjust the energy threshold based on the surrounding noise level.
+            r.adjust_for_ambient_noise(source, duration=0.2)
+
+            # Listen for the user's input.
+            audio = r.listen(source)
+
+            # Use Google to recognize audio.
+            MyText = r.recognize_google(audio)
+            MyText = MyText.lower()
+
+            print("Did you say: " + MyText)
+            SpeakText(MyText)
+
+    except sr.RequestError as e:
+        print("Could not request results; {0}".format(e))
+    except sr.UnknownValueError:
+        print("An unknown error occurred.")
+```
+
+## How It Works
+
+1. The program listens for user speech using the microphone as the input source.
+2. The recognizer adjusts the energy threshold based on the surrounding noise level.
+3. The user's speech is converted to text using Google's speech recognition service (`recognize_google`).
+4. The text is then printed on the console.
+5. The program utilizes the `pyttsx3` library to read the recognized text aloud.
+
+## Contribution
+
+Contributions to this project are welcome! If you encounter any issues or have ideas for improvements, feel free to create a pull request.
+
+---
+Created with ❤️
